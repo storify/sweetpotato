@@ -37,6 +37,17 @@ server.error(function(err, req, res, next){
 });
 server.listen( port);
 
+var jsonPotato = {
+   "msg"        : "Send this through a socket"
+  ,"to"         : "@dshaw"
+  ,"from"       : "@derickson"
+  ,"hashtag"    : "#11"
+  ,"created_at" : new Date().getTime()
+  ,"category"   : "feature"
+}
+
+var potato = JSON.stringify(jsonPotato);
+
 //Setup Socket.IO
 var io = io.listen(server);
 io.on('connection', function(client){
@@ -45,11 +56,11 @@ io.on('connection', function(client){
 		client.broadcast(message);
 		client.send(message);
 	});
+  client.send(potato);
 	client.on('disconnect', function(){
 		console.log('Client Disconnected.');
 	});
 });
-
 
 ///////////////////////////////////////////
 //        Routes           //
