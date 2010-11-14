@@ -5,7 +5,7 @@ var connect = require('connect')
   , sys = require('sys')
   , io = require('Socket.IO-node')
   , hbs = require('hbs')
-  , _ = require('underscore')
+  , _ = require('underscore').underscore
   , OAuth = require('oauth').OAuth
   , mongoose = require('mongoose').Mongoose
   , fs = require('fs')
@@ -183,6 +183,17 @@ setInterval(function() {
 					category	: category[1],
 					created_at	: new Date(yams[i].created_at)
 				});
+				
+				var jsonPotato = {
+           "msg"        : msg
+          ,"to"         : potato.to
+          ,"from"       : potato.from
+          ,"hashtag"    : potato.hashtag
+          ,"created_at" : potato.created_at
+          ,"category"   : potato.category
+        };
+				
+				io.broadcast(JSON.stringify(jsonPotato));
 				
 				potato.save();
 			}
