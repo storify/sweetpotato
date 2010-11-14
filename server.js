@@ -15,18 +15,19 @@ var connect = require('connect')
 var db = mongoose.connect('mongodb://localhost:27017/SweetPotato');
 mongoose.model('Potato', {
 	collection  : 'potatoes',
-	properties  : ['msg','to','from','hashtag','category','created_at','completed_at','yam'],
-	indexes 	: ['to','completed_at','created_at','category']
+	properties  : ['id','msg','to','from','hashtag','category','created_at','completed_at','yam'],
+	indexes 	: ['id','to','completed_at','created_at','category']
 });
 db.potatoes = db.model('Potato');
 
 //Connect to Yammer using oAuth
-var CONSUMER_KEY 	= 'XBuNUfGpJUe0PLm3CF0EQ',
-	CONSUMER_SECRET	= 'JwAONX6O7aHVcHLHfXbxprwUaEvZjzpq8SUCLdfhSB4';
 	
+var config = JSON.parse(fs.readFileSync("./config.json","utf8"));
+var oauth_credentials = config.oauth_credentials || {};
+
 var oa = new OAuth( 'https://www.yammer.com/oauth/request_token',
 					'https://www.yammer.com/oauth/access_token',
-					CONSUMER_KEY,CONSUMER_SECRET,
+					config.CONSUMER_KEY,config.CONSUMER_SECRET,
 					'1.0',null,'HMAC-SHA1');
 
 //Setup Express
@@ -93,10 +94,6 @@ var debug = function(str,obj) {
 	console.log(r);
 }
 
-var config = JSON.parse(fs.readFileSync("./config.json","utf8"));
-
-var oauth_credentials = config.oauth_credentials || {};
-
 server.get('/auth',function(req,res) {
 	oa.getOAuthRequestToken(function(error,oauth_token,oauth_token_secret,results) {
 		if(error) {
@@ -128,8 +125,6 @@ server.get('/oauth/access_token',function(req,res) {
 	})
 });
 
-var max_id = 0;
-
 get_latest_yams = function(newer_than_id,callback) {
 	oa.get('https://www.yammer.com/api/v1/messages.json?newer_than='+max_id,oauth_credentials.access_token,oauth_credentials.access_token_secret,function(err,json) {
 		var feed = JSON.parse(json);
@@ -156,28 +151,36 @@ get_latest_yams = function(newer_than_id,callback) {
 	});
 }
 
-setInterval(function() {
-	debug('get_latest_yams('+max_id+')');
-	get_latest_yams(max_id,function(yams) {
-		for (var i=0, len=yams.length; i < len; i++) {
-			var msg = yams[i].body.plain;
-			
-			if((category=msg.match(/(#[a-z]{1,10})/i)) && (to = msg.match(/(@[a-z0-9]{1,15})/i))) {
-				debug('Adding message :\t'+msg);
-				
-				var potato = new db.potatoes({
-					yam 		: yams[i],
-					to			: to[1],
-					from		: yams[i].from,
-					category	: category[1],
-					created_at	: new Date(yams[i].created_at)
-				});
-				
-				potato.save();
-			}
-		};	
-	});	
-},1000*30);
+var max_id = 0;
+db.potatoes.find().sort([['id','descending']]).first(function(p) {
+	max_id = (p && p.id > 0) ? p.id : 0;
+	debug('max_id: '+max_id);
+	setInterval(function() {
+		debug('get_latest_yams('+max_id+')');
+		get_latest_yams(max_id,function(yams) {
+			for (var i=0, len=yams.length; i < len; i++) {
+				var msg = yams[i].body.plain;
+
+				if((category=msg.match(/(#[a-z]{1,10})/i)) && (to = msg.match(/(@[a-z0-9]{1,15})/i))) {
+					debug('Adding message :\t'+msg);
+
+					var potato = new db.potatoes({
+						id			: yams[i].id,
+						yam 		: yams[i],
+						to			: to[1],
+						from		: yams[i].from,
+						category	: category[1],
+						created_at	: new Date(yams[i].created_at)
+					});
+
+					potato.save();
+				}
+			};	
+		});	
+	},1000*10);
+});
+
+
 
 
 
