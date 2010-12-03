@@ -92,6 +92,16 @@ $(document).ready(function() {
     $('#potatoes li.feature').toggle('fast');
     return false;
   });
+  
+  $('#todos').live('click',function(e){
+    if ($(this).hasClass('selected')) {
+      $(this).removeClass('selected');
+    } else {
+      $(this).addClass('selected');
+    }
+    $('#potatoes li.todo').toggle('fast');
+    return false;
+  });
    
   io.setPath('/client/');
   socket = new io.Socket(null, { 
