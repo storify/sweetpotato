@@ -1,3 +1,8 @@
 config.json
+<<<<<<< HEAD
+=======
+.DS_Store
+.idea
+>>>>>>> 55a6e09f897486297a013015a96c52077525efbd
 *.swp
 *.swo

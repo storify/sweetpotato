@@ -75,18 +75,6 @@ function sendStoredPotatoes(client){
   });
 }
 
-/*
-var jsonPotato = {
-   "msg"        : "Send this through a socket"
-  ,"to"         : "@dshaw"
-  ,"from"       : "@derickson"
-  ,"hashtag"    : "#11"
-  ,"created_at" : new Date().getTime()
-  ,"category"   : "feature"
-}
-
-var potato = JSON.stringify(jsonPotato);
-*/
 
 //Setup Socket.IO
 var io = io.listen(server);
@@ -96,7 +84,6 @@ io.on('connection', function(client){
 		client.broadcast(message);
 		client.send(message);
 	});
-  //client.send(potato);
   sendStoredPotatoes(client);
 	client.on('disconnect', function(){
 		console.log('Client Disconnected.');
@@ -138,8 +125,6 @@ server.get('/auth',function(req,res) {
 	});
 });
 
-
-
 server.get('/oauth/access_token',function(req,res) {
 	var oauth_verifier = req.param('oauth_verifier');
 	debug('Using oauth_verifier: '+oauth_verifier,oauth_credentials);
@@ -148,8 +133,8 @@ server.get('/oauth/access_token',function(req,res) {
 			debug('error: ',error);
 		}
 		else {
-			oauth_credentials.access_token 			= oauth_access_token;
-			oauth_credentials.access_token_secret 	= oauth_access_token_secret;
+			oauth_credentials.access_token        = oauth_access_token;
+			oauth_credentials.access_token_secret = oauth_access_token_secret;
 			debug('Yeah: ',oauth_credentials);
 		}
 	})
@@ -186,14 +171,13 @@ db.potatoes.find().sort([['id','descending']]).first(function(p) {
 	max_id = (p && p.id > 0) ? p.id : 0;
 	debug('max_id: '+max_id);
 	setInterval(function() {
-		//debug('get_latest_yams('+max_id+')');
+		debug('get_latest_yams('+max_id+')');
 		get_latest_yams(max_id,function(yams) {
 			for (var i=0, len=yams.length; i < len; i++) {
 				var msg = yams[i].body.plain;
 
 				if((category=msg.match(/(#[a-z]{1,10})/i)) && (to = msg.match(/(@[a-z0-9]{1,15})/i))) {
 					debug('Adding message :\t'+msg);
-
           var plainPotato = {
 						id			    : yams[i].id,
 						yam 		    : yams[i],
@@ -211,7 +195,6 @@ db.potatoes.find().sort([['id','descending']]).first(function(p) {
 					plainPotato.msg = plainPotato.msg.replace(plainPotato.to,'').replace(plainPotato.category,'');
 					
 					io.broadcast(JSON.stringify(plainPotato));
-					
 				}
 			};	
 		});	
@@ -235,4 +218,4 @@ function NotFound(msg){
 }
 
 
-console.log('Listening on http://0.0.0.0:' + port );
+console.log('Listening on :' + port );
