@@ -60,7 +60,7 @@ server.error(function(err, req, res, next){
 server.listen( port);
 
 function sendStoredPotatoes(client){
-  db.potatoes.find().sort([['id','descending']]).all(function(potatoes){
+  db.potatoes.find().sort([['id','ascending']]).all(function(potatoes){
     for (p in potatoes) {
       potatoes[p].msg = potatoes[p].yam.body.plain.replace(potatoes[p].to,'').replace(potatoes[p].category,'');
       client.send(JSON.stringify({
