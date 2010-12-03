@@ -1,0 +1,87 @@
+body {
+  padding: 20px;
+}
+
+#title, #subtitle {
+  text-align: center;
+}
+
+#title {
+  font-size: 20pt;
+}
+
+#subtitle {
+  font-size: 15pt;
+}
+
+#main {
+  width: 480px;
+  min-height: 200px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #EDEDED;
+  background: -webkit-gradient(linear, 0% 100%, 0% 0%, color-stop(0.7, white), color-stop(0.3, #EDEDED));
+  border-radius: 3px 3px;
+  -webkit-box-shadow: 0px 0px 10px #ccc;
+}
+
+#filters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#filters li {
+  display: inline-block;
+}
+
+#filters li a {
+  background: #187CC5 url(http://storify.com/public/img/go-a-bg-a.gif) repeat-x;
+  border-bottom: 1px solid #08397F;
+  border-right: 1px solid #08397F;
+  color: #ccc;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 26px;
+  padding: 0px 10px;
+  text-decoration: none !important;
+  text-shadow: #18689A 0px -1px 0px;
+  border-radius: 3px 3px;
+}
+
+#filters li a.selected {
+  color: white;
+  -webkit-box-shadow: 0px 0px 10px #ccc; 
+}
+
+#filters li a:hover {
+  color: white;
+}
+
+#potatoes {
+  list-style: none;
+  margin: 15px 0 0 0;
+  padding: 0;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+#potatoes li {
+  font-size: 11pt;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  line-height: 150%;
+}
+
+#potatoes li h3 {
+  font-size: 13pt;
+  color: #777;
+}
+
+#potatoes li h6 {
+  font-size: 8pt;
+  color: #ccc;
+}
