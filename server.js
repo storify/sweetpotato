@@ -171,7 +171,6 @@ db.potatoes.find().sort([['id','descending']]).first(function(p) {
 	max_id = (p && p.id > 0) ? p.id : 0;
 	debug('max_id: '+max_id);
 	setInterval(function() {
-		debug('get_latest_yams('+max_id+')');
 		get_latest_yams(max_id,function(yams) {
 			for (var i=0, len=yams.length; i < len; i++) {
 				var msg = yams[i].body.plain;
