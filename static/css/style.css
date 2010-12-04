@@ -31,11 +31,13 @@ body {
   padding: 0;
 }
 
-#filters li {
-  display: inline-block;
+#filters > li {
+  float: left;
+  margin-right: 5px;
+  margin-bottom: 15px;
 }
 
-#filters li a {
+#filters > li > a {
   background: #187CC5 url(http://storify.com/public/img/go-a-bg-a.gif) repeat-x;
   border-bottom: 1px solid #08397F;
   border-right: 1px solid #08397F;
@@ -51,16 +53,48 @@ body {
   border-radius: 3px 3px;
 }
 
-#filters li a.selected {
+#filters > li > a.selected {
   color: white;
   -webkit-box-shadow: 0px 0px 10px #ccc; 
 }
 
-#filters li a:hover {
+#filters > li > a:hover {
+  color: white;
+}
+
+.drop-list {
+  background: #187CC5;
+  border-bottom: 1px solid #08397F;
+  border-bottom-left-radius: 3px 3px;
+  border-bottom-right-radius: 3px 3px;
+  border-top-right-radius: 3px 3px;
+  border-top: 1px solid #08397F;
+  clear: both;
+  display: none;
+  list-style: none;
+  margin: 0px;
+  padding: 10px;
+  position: absolute;
+  top: 141px;
+  width: 132px;
+  z-index: 9000;
+}
+
+.drop-list > li {
+  line-height: 170%;
+}
+
+.drop-list > li > a {
+  text-decoration: none;
+  color: #ccc;
+}
+
+.drop-list > li > a.selected {
   color: white;
 }
 
 #potatoes {
+  clear: both;
   list-style: none;
   margin: 15px 0 0 0;
   padding: 0;

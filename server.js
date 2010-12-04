@@ -1,4 +1,4 @@
-//setup Dependencies
+// setup Dependencies
 require(__dirname + "/lib/setup").ext( __dirname + "/lib").ext( __dirname + "/lib/express/support");
 var connect = require('connect')
   , express = require('express')
@@ -9,10 +9,14 @@ var connect = require('connect')
   , OAuth = require('oauth').OAuth
   , mongoose = require('mongoose').Mongoose
   , fs = require('fs')
+  , config = JSON.parse(fs.readFileSync("./config.json","utf8"))
+  , max_id = 0
   , port = 8081 ;
 
-//Setup Mongoose
+// Setup Mongoose
+// Connect to the Mongo Server
 var db = mongoose.connect('mongodb://localhost:27017/SweetPotato');
+// Create the Potato model
 mongoose.model('Potato', {
 	collection  : 'potatoes',
 	properties  : ['id','msg','to','from','hashtag','category','created_at','completed_at','yam'],
@@ -20,9 +24,7 @@ mongoose.model('Potato', {
 });
 db.potatoes = db.model('Potato');
 
-//Connect to Yammer using oAuth
-	
-var config = JSON.parse(fs.readFileSync("./config.json","utf8"));
+// Connect to Yammer using oAuth
 var oauth_credentials = config.oauth_credentials || {};
 
 var oa = new OAuth( 'https://www.yammer.com/oauth/request_token',
@@ -30,7 +32,7 @@ var oa = new OAuth( 'https://www.yammer.com/oauth/request_token',
 					config.CONSUMER_KEY,config.CONSUMER_SECRET,
 					'1.0',null,'HMAC-SHA1');
 
-//Setup Express
+// Setup Express
 var server = express.createServer();
 server.configure(function(){
   server.set('views', __dirname + '/views');
@@ -40,7 +42,7 @@ server.configure(function(){
   server.set("view engine", "hbs");
 });
 
-//setup the errors
+// setup the errors
 server.error(function(err, req, res, next){
   if (err instanceof NotFound) {
     res.render('404.hbs', { locals: {
@@ -57,8 +59,10 @@ server.error(function(err, req, res, next){
         },status: 500 });
   }
 });
-server.listen( port);
+// Listen on the port assigned above
+server.listen(port);
 
+// A function to find all stored Potatoes and send them via Socket.io to the client
 function sendStoredPotatoes(client){
   db.potatoes.find().sort([['id','ascending']]).all(function(potatoes){
     for (p in potatoes) {
@@ -76,15 +80,15 @@ function sendStoredPotatoes(client){
 }
 
 
-//Setup Socket.IO
+// Setup Socket.IO and send all stored Potatoes upon connection
 var io = io.listen(server);
 io.on('connection', function(client){
 	console.log('Client Connected');
+	sendStoredPotatoes(client);
 	client.on('message', function(message){
 		client.broadcast(message);
 		client.send(message);
 	});
-  sendStoredPotatoes(client);
 	client.on('disconnect', function(){
 		console.log('Client Disconnected.');
 	});
@@ -96,21 +100,30 @@ io.on('connection', function(client){
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
 
+// Our one and only user facing route, this sets up the filter menu, gets us hooked into Socket.io and listens for new Potatoes
 server.get('/', function(req,res){
-  res.render('index.hbs', {
-  locals : {
-        title : 'SweetPotato'
-       ,description: 'Bake your to do list.'
-       ,author: 'Storify'
+  db.potatoes._collection.distinct("to",function(err,users){
+    for (var i in users) {
+      users[i] = users[i].replace("@",'');
+    }
+    res.render('index.hbs', {
+      locals : {
+        users       : users
+       ,title       : 'SweetPotato'
+       ,description : 'Bake your to do list.'
+       ,author      : 'Storify'
       }
+    });
   });
 });
 
+// A util function to help output strings and variables to the console
 var debug = function(str,obj) {
 	var r = (obj) ? str+' '+sys.inspect(obj) : str;
 	console.log(r);
 }
 
+// TODO @xdamman || @dshaw: Please document this route
 server.get('/auth',function(req,res) {
 	oa.getOAuthRequestToken(function(error,oauth_token,oauth_token_secret,results) {
 		if(error) {
@@ -125,6 +138,7 @@ server.get('/auth',function(req,res) {
 	});
 });
 
+// TODO @xdamman || @dshaw: Please document this route
 server.get('/oauth/access_token',function(req,res) {
 	var oauth_verifier = req.param('oauth_verifier');
 	debug('Using oauth_verifier: '+oauth_verifier,oauth_credentials);
@@ -140,11 +154,10 @@ server.get('/oauth/access_token',function(req,res) {
 	})
 });
 
+// TODO @xdamman || @dshaw: Please document this function
 get_latest_yams = function(newer_than_id,callback) {
 	oa.get('https://www.yammer.com/api/v1/messages.json?newer_than='+max_id,oauth_credentials.access_token,oauth_credentials.access_token_secret,function(err,json) {
 		var feed = JSON.parse(json);
-		//debug('json: ',feed);
-		
 		
 		var references = feed.references;
 		
@@ -166,7 +179,8 @@ get_latest_yams = function(newer_than_id,callback) {
 	});
 }
 
-var max_id = 0;
+// Check Yammer for new Yams every 30 seconds, if there are any, check to see if they are Potatoes
+// If they are a Potatoes, save them to mongo and broadcast them to the clients 
 db.potatoes.find().sort([['id','descending']]).first(function(p) {
 	max_id = (p && p.id > 0) ? p.id : 0;
 	debug('max_id: '+max_id);
@@ -200,16 +214,17 @@ db.potatoes.find().sort([['id','descending']]).first(function(p) {
 	},1000*10);
 });
 
-//A Route for Creating a 500 Error (Useful to keep around)
+// A Route for Creating a 500 Error (Useful to keep around)
 server.get('/500', function(req, res){
   throw new Error('This is a 500 Error');
 });
 
-//The 404 Route (ALWAYS Keep this as the last route)
+// The 404 Route (ALWAYS Keep this as the last route)
 server.get('/*', function(req, res){
   throw new NotFound;
 });
 
+// Create the not found error
 function NotFound(msg){
   this.name = 'NotFound';
   Error.call(this, msg);

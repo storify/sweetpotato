@@ -3,6 +3,20 @@
     <li><a href="#" id="features" class="selected">#feature</a></li>
     <li><a href="#" id="bugs" class="selected">#bug</a></li>
     <li><a href="#" id="todos" class="selected">#todo</a></li>
+    <li><a href="#" id="to-users" class="selected">To: </a> 
+      <ul id="to-users-list" class="drop-list" style="display: none;">
+      {{#users}}
+        <li><a href="#" id="to-{{ this }}" class="selected user">@{{this}}</a></li>
+      {{/users}}
+      </ul>
+    </li>
+    <li><a href="#" id="from-users" class="selected">From: </a> 
+      <ul id="from-users-list" class="drop-list" style="display: none;">
+      {{#users}}
+        <li><a href="#" id="from-{{ this }}" class="selected user">@{{this}}</a></li>
+      {{/users}}
+      </ul>
+    </li>
   </ul>
   <div id="teamMenu"></div>
 	<ul id="potatoes"></ul>

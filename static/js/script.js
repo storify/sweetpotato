@@ -102,7 +102,28 @@ $(document).ready(function() {
     $('#potatoes li.todo').toggle('fast');
     return false;
   });
-   
+
+  $('#to-users').live('click',function(e){
+    $('#to-users-list').toggle('fast');
+    return false;
+  });
+  
+  $('#from-users').live('click',function(e){
+    $('#from-users-list').toggle('fast');
+    return false;
+  });
+
+  $('.user').live('click',function(e){
+    var toUser = $(this).attr('id');
+    if ($(this).hasClass('selected')) {
+      $(this).removeClass('selected');
+    } else {
+      $(this).addClass('selected');
+    }
+    $('#potatoes li.'+ toUser).toggle('fast');
+    return false;
+  });
+
   io.setPath('/client/');
   socket = new io.Socket(null, { 
     port: 8081
