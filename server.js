@@ -62,6 +62,37 @@ server.error(function(err, req, res, next){
 // Listen on the port assigned above
 server.listen(port);
 
+///////////////////////////////////////////
+//        Utils           //
+///////////////////////////////////////////
+
+/////// ADD ALL YOUR UTILITY FUNCTIONS HERE  /////////
+
+// A util function to help output strings and variables to the console
+var debug = function(str,obj) {
+	var r = (obj) ? str+' '+sys.inspect(obj) : str;
+	console.log(r);
+}
+
+function linkify(text) {
+	if( !text ) return text;
+	
+	text = text.replace(/((https?\:\/\/|ftp\:\/\/)|(www\.))(\S+)(\w{2,4})(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi,function(url){
+		nice = url;
+		if( url.match('^https?:\/\/') )
+		{
+			nice = nice.replace(/^https?:\/\//i,'')
+		}
+		else
+			url = 'http://'+url;
+		
+		
+		return '<a target="_blank" rel="nofollow" href="'+ url +'">'+ nice.replace(/^www./i,'') +'</a>';
+	});
+	
+	return text;
+}
+
 // A function to find all stored Potatoes and send them via Socket.io to the client
 function sendStoredPotatoes(client){
   db.potatoes.find().sort([['created_at','ascending']]).all(function(potatoes){
@@ -70,7 +101,7 @@ function sendStoredPotatoes(client){
       client.send(JSON.stringify({
         to        :   potatoes[p].to,
         from      :   potatoes[p].from,
-        msg       :   potatoes[p].msg,
+        msg       :   linkify(potatoes[p].msg),
         category  :   potatoes[p].category,
         created_at:   potatoes[p].created_at,
         hashtag   :   potatoes[p].hashtag
@@ -78,7 +109,6 @@ function sendStoredPotatoes(client){
     }
   });
 }
-
 
 // Setup Socket.IO and send all stored Potatoes upon connection
 var io = io.listen(server);
@@ -122,12 +152,6 @@ server.get('/', function(req,res){
     });
   });
 });
-
-// A util function to help output strings and variables to the console
-var debug = function(str,obj) {
-	var r = (obj) ? str+' '+sys.inspect(obj) : str;
-	console.log(r);
-}
 
 // TODO @xdamman || @dshaw: Please document this route
 server.get('/auth',function(req,res) {
@@ -213,7 +237,7 @@ db.potatoes.find().sort([['id','descending']]).first(function(p) {
 
 					potato.save();
 					
-					plainPotato.msg = plainPotato.msg.replace(plainPotato.to,'').replace(plainPotato.category,'');
+					plainPotato.msg = linkify(plainPotato.msg.replace(plainPotato.to,'').replace(plainPotato.category,''));
 					
 					io.broadcast(JSON.stringify(plainPotato));
 				}
