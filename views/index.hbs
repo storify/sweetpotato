@@ -5,16 +5,16 @@
     <li><a href="#" id="todos" class="selected">#todo</a></li>
     <li><a href="#" id="to-users" class="selected">To: </a> 
       <ul id="to-users-list" class="drop-list" style="display: none;">
-      {{#users}}
+      {{#to_users}}
         <li><a href="#" id="to-{{ this }}" class="selected user">@{{this}}</a></li>
-      {{/users}}
+      {{/to_users}}
       </ul>
     </li>
     <li><a href="#" id="from-users" class="selected">From: </a> 
       <ul id="from-users-list" class="drop-list" style="display: none;">
-      {{#users}}
+      {{#from_users}}
         <li><a href="#" id="from-{{ this }}" class="selected user">@{{this}}</a></li>
-      {{/users}}
+      {{/from_users}}
       </ul>
     </li>
   </ul>

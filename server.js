@@ -64,7 +64,7 @@ server.listen(port);
 
 // A function to find all stored Potatoes and send them via Socket.io to the client
 function sendStoredPotatoes(client){
-  db.potatoes.find().sort([['id','ascending']]).all(function(potatoes){
+  db.potatoes.find().sort([['created_at','ascending']]).all(function(potatoes){
     for (p in potatoes) {
       potatoes[p].msg = potatoes[p].yam.body.plain.replace(potatoes[p].to,'').replace(potatoes[p].category,'');
       client.send(JSON.stringify({
@@ -102,17 +102,23 @@ io.on('connection', function(client){
 
 // Our one and only user facing route, this sets up the filter menu, gets us hooked into Socket.io and listens for new Potatoes
 server.get('/', function(req,res){
-  db.potatoes._collection.distinct("to",function(err,users){
-    for (var i in users) {
-      users[i] = users[i].replace("@",'');
+  db.potatoes._collection.distinct("to",function(err,toUsers){
+    for (var i in toUsers) {
+      toUsers[i] = toUsers[i].replace("@",'');
     }
-    res.render('index.hbs', {
-      locals : {
-        users       : users
-       ,title       : 'SweetPotato'
-       ,description : 'Bake your to do list.'
-       ,author      : 'Storify'
+    db.potatoes._collection.distinct("from",function(err,fromUsers){
+      for (var i in fromUsers) {
+        fromUsers[i] = fromUsers[i].replace("@",'');
       }
+      res.render('index.hbs', {
+        locals : {
+          to_users    : toUsers
+         ,from_users  : fromUsers
+         ,title       : 'SweetPotato'
+         ,description : 'Bake your to do list.'
+         ,author      : 'Storify'
+        }
+      });
     });
   });
 });
@@ -188,8 +194,10 @@ db.potatoes.find().sort([['id','descending']]).first(function(p) {
 		get_latest_yams(max_id,function(yams) {
 			for (var i=0, len=yams.length; i < len; i++) {
 				var msg = yams[i].body.plain;
+        
+        var to = msg.match(/(@[a-z0-9]{1,15})/i) || ["","@unassigned"];
 
-				if((category=msg.match(/(#[a-z]{1,10})/i)) && (to = msg.match(/(@[a-z0-9]{1,15})/i))) {
+				if((category=msg.match(/(#(feature|bug|todo))/i))) {
 					debug('Adding message :\t'+msg);
           var plainPotato = {
 						id			    : yams[i].id,
