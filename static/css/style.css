@@ -3,6 +3,10 @@ body {
   background: #DBDBDB;
 }
 
+.hidden { 
+  display: none;
+}
+
 #title, #subtitle {
   text-align: center;
 }
@@ -79,7 +83,7 @@ body {
   margin: 0px;
   padding: 10px;
   position: absolute;
-  top: 141px;
+  top: 172px;
   width: 132px;
   z-index: 9000;
 }

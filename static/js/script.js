@@ -2,6 +2,8 @@
 
 */
 
+var pFilters = [];
+
 function getDate(dateStr) {
   var d;
   dateStr = (typeof dateStr == 'undefined') ? '' : ''+dateStr; // Make sure it is a string
@@ -71,35 +73,36 @@ function displayDate(date,relative) {
 	return m_names[curr_month] + " "+curr_date+", " + curr_year + ' at '+f.getHours()+':'+curr_minutes;
 };
 
+function togglePotatoes(pType) {
+  if (pFilters.indexOf(pType) > -1) {
+    pFilters.splice(pFilters.indexOf(pType),1);    
+  } else {
+    pFilters.push(pType);
+  }
+  console.log(pFilters.join(","));
+  
+  $(pFilters.join(",")).hide('fast');
+  $("#potatoes li").not($(pFilters.join(","))).show('fast');
+
+}
+
 $(document).ready(function() { 
    
   $('#bugs').live('click',function(e){
-    if ($(this).hasClass('selected')) {
-      $(this).removeClass('selected');
-    } else {
-      $(this).addClass('selected');
-    }
-    $('#potatoes li.bug').toggle('fast');
+    $(this).toggleClass('selected');
+    togglePotatoes('.bug');
     return false;
   });
   
   $('#features').live('click',function(e){
-    if ($(this).hasClass('selected')) {
-      $(this).removeClass('selected');
-    } else {
-      $(this).addClass('selected');
-    }
-    $('#potatoes li.feature').toggle('fast');
+    $(this).toggleClass('selected');
+    togglePotatoes('.feature');
     return false;
   });
   
   $('#todos').live('click',function(e){
-    if ($(this).hasClass('selected')) {
-      $(this).removeClass('selected');
-    } else {
-      $(this).addClass('selected');
-    }
-    $('#potatoes li.todo').toggle('fast');
+    $(this).toggleClass('selected');
+    togglePotatoes('.todo');
     return false;
   });
 
@@ -114,13 +117,9 @@ $(document).ready(function() {
   });
 
   $('.user').live('click',function(e){
-    var toUser = $(this).attr('id');
-    if ($(this).hasClass('selected')) {
-      $(this).removeClass('selected');
-    } else {
-      $(this).addClass('selected');
-    }
-    $('#potatoes li.'+ toUser).toggle('fast');
+    var thisUser = $(this).attr('id');
+    $(this).toggleClass('selected');
+    togglePotatoes("."+thisUser);
     return false;
   });
 

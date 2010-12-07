@@ -20,17 +20,20 @@ var db = mongoose.connect('mongodb://localhost:27017/SweetPotato');
 mongoose.model('Potato', {
 	collection  : 'potatoes',
 	properties  : ['id','msg','to','from','hashtag','category','created_at','completed_at','yam'],
-	indexes 	: ['id','to','completed_at','created_at','category']
+	indexes 	  : ['id','to','completed_at','created_at','category']
 });
 db.potatoes = db.model('Potato');
 
 // Connect to Yammer using oAuth
 var oauth_credentials = config.oauth_credentials || {};
 
-var oa = new OAuth( 'https://www.yammer.com/oauth/request_token',
-					'https://www.yammer.com/oauth/access_token',
-					config.CONSUMER_KEY,config.CONSUMER_SECRET,
-					'1.0',null,'HMAC-SHA1');
+var oa = new OAuth(
+  'https://www.yammer.com/oauth/request_token',
+  'https://www.yammer.com/oauth/access_token',
+	config.CONSUMER_KEY,
+	config.CONSUMER_SECRET,
+	'1.0',null,'HMAC-SHA1'
+);
 
 // Setup Express
 var server = express.createServer();
@@ -109,6 +112,10 @@ function sendStoredPotatoes(client){
     }
   });
 }
+
+///////////////////////////////////////////
+//        Socket.io          //
+///////////////////////////////////////////
 
 // Setup Socket.IO and send all stored Potatoes upon connection
 var io = io.listen(server);
