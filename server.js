@@ -250,6 +250,7 @@ db.potatoes.find().sort([['id','descending']]).first(function(p) {
 						from		    : yams[i].from,
 						category	  : category[1],
 						created_at	: new Date(yams[i].created_at),
+						completed_at: null,
 						msg         : yams[i].body.plain
 					};
 
