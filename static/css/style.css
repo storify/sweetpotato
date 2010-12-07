@@ -1,5 +1,6 @@
 body {
   padding: 20px;
+  background: #DBDBDB;
 }
 
 #title, #subtitle {
@@ -7,11 +8,14 @@ body {
 }
 
 #title {
-  font-size: 20pt;
+  font-family: 'Lobster', arial, serif;
+  font-size: 40pt;
+  text-shadow: 1px 1px white, -1px -1px #444;
 }
 
 #subtitle {
   font-size: 15pt;
+  text-shadow: 1px 1px white, -1px -1px #eee;
 }
 
 #main {
@@ -22,7 +26,7 @@ body {
   background: #EDEDED;
   background: -webkit-gradient(linear, 0% 100%, 0% 0%, color-stop(0.7, white), color-stop(0.3, #EDEDED));
   border-radius: 3px 3px;
-  -webkit-box-shadow: 0px 0px 10px #ccc;
+  -webkit-box-shadow: 0px 0px 10px #aaa;
 }
 
 #filters {
