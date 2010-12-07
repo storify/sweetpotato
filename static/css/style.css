@@ -27,8 +27,8 @@ body {
   min-height: 200px;
   margin: 20px auto;
   padding: 20px;
-  background: #EDEDED;
-  background: -webkit-gradient(linear, 0% 100%, 0% 0%, color-stop(0.7, white), color-stop(0.3, #EDEDED));
+  background: #fff;
+  /*background: -webkit-gradient(linear, 0% 100%, 0% 0%, color-stop(0.7, white), color-stop(0.3, #EDEDED));*/
   border-radius: 3px 3px;
   -webkit-box-shadow: 0px 0px 10px #aaa;
 }
@@ -45,7 +45,7 @@ body {
   margin-bottom: 15px;
 }
 
-#filters > li > a {
+#filters > li > a, .bake {
   background: #187CC5 url(http://storify.com/public/img/go-a-bg-a.gif) repeat-x;
   border-bottom: 1px solid #08397F;
   border-right: 1px solid #08397F;
@@ -118,6 +118,11 @@ body {
   line-height: 150%;
 }
 
+#potatoes li span.task {
+  display: block;
+  margin-right: 100px;
+}
+
 #potatoes li h3 {
   font-size: 13pt;
   color: #777;
@@ -126,5 +131,12 @@ body {
 #potatoes li h6 {
   font-size: 8pt;
   color: #ccc;
+}
+
+.bake {
+  color: #fff !important;
+  text-shadow: none;
+  float: right;
+  display: none;
 }
 

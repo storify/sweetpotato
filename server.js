@@ -98,7 +98,7 @@ function linkify(text) {
 
 // A function to find all stored Potatoes and send them via Socket.io to the client
 function sendStoredPotatoes(client){
-  db.potatoes.find().sort([['created_at','ascending']]).all(function(potatoes){
+  db.potatoes.find({'completed_at':null}).sort([['created_at','ascending']]).all(function(potatoes){
     for (p in potatoes) {
       potatoes[p].msg = potatoes[p].yam.body.plain.replace(potatoes[p].to,'').replace(potatoes[p].category,'');
       client.send(JSON.stringify({
@@ -107,9 +107,19 @@ function sendStoredPotatoes(client){
         msg       :   linkify(potatoes[p].msg),
         category  :   potatoes[p].category,
         created_at:   potatoes[p].created_at,
-        hashtag   :   potatoes[p].hashtag
+        completed_at:   potatoes[p].completed_at,
+        hashtag   :   potatoes[p].hashtag,
+        id        :   potatoes[p].id
       }));
     }
+  });
+}
+
+function bakePotato(client, id){
+  db.potatoes.find({"id":id}).first(function(potato){
+    potato.completed_at = new Date();
+    potato.save();
+    client.broadcast({"potato_deleted":id});
   });
 }
 
@@ -120,14 +130,17 @@ function sendStoredPotatoes(client){
 // Setup Socket.IO and send all stored Potatoes upon connection
 var io = io.listen(server);
 io.on('connection', function(client){
-	console.log('Client Connected');
+	debug('Client Connected');
 	sendStoredPotatoes(client);
 	client.on('message', function(message){
+	  message = JSON.parse(message);
+	  if(message.bake_potato){
+	    bakePotato(client, message.potato_id);
+	  }
 		client.broadcast(message);
-		client.send(message);
 	});
 	client.on('disconnect', function(){
-		console.log('Client Disconnected.');
+		debug('Client Disconnected.');
 	});
 });
 
@@ -271,4 +284,4 @@ function NotFound(msg){
 }
 
 
-console.log('Listening on :' + port );
+debug('Listening on :' + port );

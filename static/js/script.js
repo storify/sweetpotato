@@ -123,6 +123,10 @@ $(document).ready(function() {
     return false;
   });
 
+  $('#potatoes li').live('hover',function(e){
+    $(this).find('.bake').toggle();
+  });
+
   io.setPath('/client/');
   socket = new io.Socket(null, { 
     port: 8081
@@ -130,16 +134,20 @@ $(document).ready(function() {
   });
   socket.connect();
    
-  $('#sender').bind('click', function(e) {
+  $('.bake').live('click', function(e) {
     e.preventDefault();
-    socket.send("Message Sent on " + new Date());  
+    socket.send('{"bake_potato":true,"potato_id":'+$(this).parents('li').attr('id')+'}');  
+    $(this).parents('li').remove();
     return false;   
   });
   
   socket.on('message', function(data){
     var potato = $.parseJSON( data );
     var classString = "to-" + potato.to.replace("@",'') + " " + potato.category.replace("#",'') + " from-" + potato.from.replace("@",'');
-    $('#potatoes').prepend('<li class="'+classString+'"><h3>' + potato.to + ": " + potato.category + "</h3>" + potato.msg +" <h6> Assigned by " + potato.from + " on " + displayDate(potato.created_at) + '</h6></li>');  
+    if (potato.completed_at) {
+      var completed_at = 'green';
+    }
+    $('#potatoes').prepend('<li id="'+potato.id+'" class="'+classString+'" style="background: '+ completed_at +';"><h3>' + potato.to + ": " + potato.category + ' <a class="bake" href="#">Bake it</a></h3><span class="task">' + potato.msg +"</span><h6> Assigned by " + potato.from + " on " + displayDate(potato.created_at) + '</h6></li>');  
   });
   
   socket.on('connect', function(data){
