@@ -81,8 +81,8 @@ function togglePotatoes(pType) {
   }
   console.log(pFilters.join(","));
   
-  $(pFilters.join(",")).hide('fast');
-  $("#potatoes li").not($(pFilters.join(","))).show('fast');
+  $(pFilters.join(",")).hide('slow');
+  $("#potatoes li").not($(pFilters.join(","))).show('slow');
 
 }
 
