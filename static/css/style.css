@@ -3,6 +3,12 @@ body {
   background: #DBDBDB;
 }
 
+/* These selection declarations have to be separate.
+   No text-shadow: twitter.com/miketaylr/status/12228805301 
+   Sweet Potato!: http://www.colourlovers.com/color/DD7500/sweet_potato */
+::-moz-selection{ background: #DD7500; color:#fff; text-shadow: none; }
+::selection { background:#DD7500; color:#fff; text-shadow: none; }
+
 .hidden { 
   display: none;
 }
