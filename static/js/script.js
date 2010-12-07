@@ -143,11 +143,12 @@ $(document).ready(function() {
   
   socket.on('message', function(data){
     var potato = $.parseJSON( data );
-    var classString = "to-" + potato.to.replace("@",'') + " " + potato.category.replace("#",'') + " from-" + potato.from.replace("@",'');
-    if (potato.completed_at) {
-      var completed_at = 'green';
-    }
-    $('#potatoes').prepend('<li id="'+potato.id+'" class="'+classString+'" style="background: '+ completed_at +';"><h3>' + potato.to + ": " + potato.category + ' <a class="bake" href="#">Bake it</a></h3><span class="task">' + potato.msg +"</span><h6> Assigned by " + potato.from + " on " + displayDate(potato.created_at) + '</h6></li>');  
+    if(potato.bake_potato) {
+      $('#'+potato.potato_id).remove();
+    } else {
+      var classString = "to-" + potato.to.replace("@",'') + " " + potato.category.replace("#",'') + " from-" + potato.from.replace("@",'');
+      $('#potatoes').prepend('<li id="'+potato.id+'" class="'+classString+'" style="background: '+ completed_at +';"><h3>' + potato.to + ": " + potato.category + ' <a class="bake" href="#">Bake it</a></h3><span class="task">' + potato.msg +"</span><h6> Assigned by " + potato.from + " on " + displayDate(potato.created_at) + '</h6></li>'); 
+    } 
   });
   
   socket.on('connect', function(data){
